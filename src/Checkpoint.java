@@ -30,6 +30,13 @@ public class Checkpoint {
 		 * 5. Print only the cars with "toyota" in the name.
 		 */
 		
+		Stream<CarMPGEntry> strem = readCarMPGEntryDataFromFile().stream();
+		
+		strem.forEach((i)->{
+			System.out.print(i.carName + " ");
+			System.out.print(i.mpg);
+			System.out.println();
+		});
 		
 	}
 	
