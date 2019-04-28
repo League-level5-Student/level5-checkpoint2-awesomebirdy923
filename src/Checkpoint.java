@@ -3,17 +3,18 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
 public class Checkpoint {
 	public static void main(String[] args) {
 		/*
-		 * The auto-mgp.data file contains the miles-per-gallon data on various different types of cars.
-		 * Each line of the file provides the data for one CarMPGEntry object.
-		 * (source: http://archive.ics.uci.edu/ml/datasets)
+		 * The auto-mgp.data file contains the miles-per-gallon data on various
+		 * different types of cars. Each line of the file provides the data for one
+		 * CarMPGEntry object. (source: http://archive.ics.uci.edu/ml/datasets)
 		 * 
-		 * Use the method provided to get an ArrayList of CarMPGEntry objects. Convert the ArrayList into a Stream.
-		 * Using streams, perform the following:
+		 * Use the method provided to get an ArrayList of CarMPGEntry objects. Convert
+		 * the ArrayList into a Stream. Using streams, perform the following:
 		 * 
 		 * 1. Print the entire list.
 		 * 
@@ -29,75 +30,105 @@ public class Checkpoint {
 		 * 
 		 * 5. Print only the cars with "toyota" in the name.
 		 */
-		
+
+		List<String> names = new ArrayList<String>();
 		Stream<CarMPGEntry> strem = readCarMPGEntryDataFromFile().stream();
-		
-		strem.forEach((i)->{
-			System.out.print(i.carName + " ");
+		Stream<CarMPGEntry> strem2 = readCarMPGEntryDataFromFile().stream();
+		Stream<CarMPGEntry> strem3 = readCarMPGEntryDataFromFile().stream();
+
+		for (int j = 0; j < readCarMPGEntryDataFromFile().size(); j++) {
+			names.add(readCarMPGEntryDataFromFile().get(j).carName);
+		}
+
+		Stream<String> carNames = names.stream();
+		System.out.println();
+
+		strem.forEach((i) -> {
 			System.out.print(i.mpg);
 			System.out.println();
 		});
-		
+		System.out.println();
+
+		carNames.sorted().forEach((r) -> {
+			System.out.print(r);
+			System.out.println();
+		});
+		System.out.println();
+
+		strem2.forEach((i) -> {
+			if (i.cylinders != 8) {
+				System.out.print(i.carName);
+				System.out.println();
+			}
+		});
+		System.out.println();
+
+		strem3.forEach((i) -> {
+			if (i.carName.contains("toyota")) {
+				System.out.println(i.carName);
+			}
+		});
+
 	}
-	
-	public static ArrayList<CarMPGEntry> readCarMPGEntryDataFromFile(){
+
+	public static ArrayList<CarMPGEntry> readCarMPGEntryDataFromFile() {
 		ArrayList<CarMPGEntry> carList = new ArrayList<CarMPGEntry>();
-		
+
 		try {
 			BufferedReader br = new BufferedReader(new FileReader("auto-mpg.data"));
-			
+
 			String line = br.readLine();
-			while(line != null) {
+			while (line != null) {
 				String entry = "";
 				ArrayList<String> splitEntry = new ArrayList<String>();
-				for(int i = 0; i < line.length(); i++) {
+				for (int i = 0; i < line.length(); i++) {
 					char c = line.charAt(i);
-					if(c == ' ' || c == '\t') {
-						if(entry.length() > 0) {
+					if (c == ' ' || c == '\t') {
+						if (entry.length() > 0) {
 							splitEntry.add(entry);
 							entry = "";
 						}
-					}else if(c =='\"') {
+					} else if (c == '\"') {
 						i++;
 						c = line.charAt(i);
-						while(c != '\"') {
+						while (c != '\"') {
 							entry += c;
 							c = line.charAt(++i);
 						}
 						splitEntry.add(entry);
-					}else {
+					} else {
 						entry += c;
 					}
 				}
-				
+
 				CarMPGEntry cmpg = new CarMPGEntry();
-				
+
 				cmpg.mpg = Float.parseFloat(splitEntry.get(0));
 				cmpg.cylinders = Integer.parseInt(splitEntry.get(1));
 				cmpg.displacement = Float.parseFloat(splitEntry.get(2));
 				try {
 					cmpg.horsePower = Float.parseFloat(splitEntry.get(3));
-					
-				}catch(NumberFormatException e) {
+
+				} catch (NumberFormatException e) {
 					cmpg.horsePower = -1;
 				}
 				cmpg.weight = Float.parseFloat(splitEntry.get(4));
 				cmpg.acceleration = Float.parseFloat(splitEntry.get(5));
-				cmpg.modelYear  = Integer.parseInt(splitEntry.get(6));
+				cmpg.modelYear = Integer.parseInt(splitEntry.get(6));
 				cmpg.origin = Integer.parseInt(splitEntry.get(7));
 				cmpg.carName = splitEntry.get(8);
 				carList.add(cmpg);
 
 				line = br.readLine();
 			}
-			
+
 			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return carList;
 	}
 }
